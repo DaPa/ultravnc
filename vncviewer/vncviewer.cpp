@@ -29,7 +29,6 @@
 #include "Exception.h"
 #include "display.h"
 #ifdef _INTERNALLIB
-#pragma comment(lib, "zlibstat.lib")
 #pragma comment(lib, "zip32.lib")
 #pragma comment(lib, "unz32lib.lib")
 #pragma comment(lib, "libjpeg-turbo-win-static.lib")

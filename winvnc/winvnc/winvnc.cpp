@@ -28,7 +28,6 @@
 
 // WinMain and main WndProc for the new version of WinVNC
 #ifdef _INTERNALLIB
-#pragma comment(lib, "zlibstat.lib")
 #pragma comment(lib, "zip32.lib")
 #pragma comment(lib, "unz32lib.lib")
 #pragma comment(lib, "libjpeg-turbo-win-static.lib")
