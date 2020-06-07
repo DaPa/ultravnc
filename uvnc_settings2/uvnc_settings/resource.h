@@ -153,7 +153,10 @@
 #define IDC_ALLOWLOOPBACK               1211
 #define IDD_OPTION7                     1212
 #define IDC_LOOPBACKONLY                1213
-#define IDD_PASSWDBOX                   1213
+#define IDC_LANONLY                      1215
+#define IDC_LANMIN                       1216
+#define IDC_LANMAX                       1217
+#define IDD_PASSWDBOX                   1214
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

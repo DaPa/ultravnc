@@ -15,6 +15,9 @@
 extern LONG SocketConnect;
 extern LONG HTTPConnect;
 extern LONG AutoPortSelect;
+extern LONG LanOnly;
+extern LONG LanMin;
+extern LONG LanMax;
 extern LONG PortNumber;
 extern LONG HttpPortNumber;
 extern LONG LoopbackOnly;
@@ -214,6 +217,9 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 			SendMessage(GetDlgItem(hwnd, IDC_CONNECT_HTTP), BM_SETCHECK, HTTPConnect, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_ALLOWLOOPBACK), BM_SETCHECK, AllowLoopback, 0);
 			SendMessage(GetDlgItem(hwnd, IDC_LOOPBACKONLY), BM_SETCHECK, LoopbackOnly, 0);
+			SendMessage(GetDlgItem(hwnd, IDC_LANONLY), BM_SETCHECK, LanOnly, 0);
+			SetDlgItemInt(hwnd, IDC_LANMIN, LanMin, FALSE);
+			SetDlgItemInt(hwnd, IDC_LANMAX, LanMax, FALSE);
 			SetDlgItemInt(hwnd, IDC_PORTRFB, PortNumber, FALSE);
 			SetDlgItemInt(hwnd, IDC_PORTHTTP, HttpPortNumber, FALSE);
 			CheckDlgButton(hwnd, IDC_PORTNO_AUTO,(AutoPortSelect) ? BST_CHECKED : BST_UNCHECKED);
@@ -285,7 +291,10 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 			AllowLoopback= (LONG)SendDlgItemMessage(hwnd, IDC_ALLOWLOOPBACK, BM_GETCHECK, 0, 0);
 			LoopbackOnly= (LONG)SendDlgItemMessage(hwnd, IDC_LOOPBACKONLY, BM_GETCHECK, 0, 0);
 			AutoPortSelect= (LONG)SendDlgItemMessage(hwnd, IDC_PORTNO_AUTO, BM_GETCHECK, 0, 0);
+			LanOnly=(LONG)SendDlgItemMessage(hwnd, IDC_LANONLY, BM_GETCHECK, 0, 0);
 			BOOL ok1, ok2;
+			LanMin=GetDlgItemInt(hwnd, IDC_LANMIN, &ok1, TRUE);
+			LanMax=GetDlgItemInt(hwnd, IDC_LANMAX, &ok2, TRUE);
 			PortNumber=GetDlgItemInt(hwnd, IDC_PORTRFB, &ok1, TRUE);
 			HttpPortNumber=GetDlgItemInt(hwnd, IDC_PORTHTTP, &ok2, TRUE);
 			break;
@@ -304,6 +313,9 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 				EnableWindow(GetDlgItem(hwnd, IDC_CONNECT_HTTP), SocketConnect);
 				EnableWindow(GetDlgItem(hwnd, IDC_ALLOWLOOPBACK), SocketConnect);
 				EnableWindow(GetDlgItem(hwnd, IDC_LOOPBACKONLY), SocketConnect);
+				EnableWindow(GetDlgItem(hwnd, IDC_LANONLY), SocketConnect);
+				EnableWindow(GetDlgItem(hwnd, IDC_LANMIN), SocketConnect);
+				EnableWindow(GetDlgItem(hwnd, IDC_LANMAX), SocketConnect);
 				EnableWindow(GetDlgItem(hwnd, IDC_PORTRFB), SocketConnect && !AutoPortSelect);
 				EnableWindow(GetDlgItem(hwnd, IDC_PORTHTTP), SocketConnect && HTTPConnect && !AutoPortSelect);
 				EnableWindow(GetDlgItem(hwnd, IDC_PORTNO_AUTO), SocketConnect);
@@ -314,6 +326,8 @@ BOOL CALLBACK DlgProcOptions1(HWND hwnd, UINT uMsg,
 				EnableWindow(GetDlgItem(hwnd, IDC_CHECKUPNP), SocketConnect && !AutoPortSelect);
 				EnableWindow(GetDlgItem(hwnd, IDC_FIXUPNP),!UPNP_status && UPNP_status_checked );
 				BOOL ok1, ok2;
+				LanMin=GetDlgItemInt(hwnd, IDC_LANMIN, &ok1, TRUE);
+				LanMax=GetDlgItemInt(hwnd, IDC_LANMAX, &ok2, TRUE);
 				PortNumber=GetDlgItemInt(hwnd, IDC_PORTRFB, &ok1, TRUE);
 				HttpPortNumber=GetDlgItemInt(hwnd, IDC_PORTHTTP, &ok2, TRUE);
 			}

@@ -204,6 +204,9 @@
 #define IDC_REMOTETEXT_EDIT             1141
 #define IDC_CHATAREA_EDIT               1141
 #define IDC_CLEAR_B                     1142
+#define IDC_LANONLY                     1215
+#define IDC_LANMIN                      1216
+#define IDC_LANMAX                      1217
 #define IDC_FINGER                      9000
 #define IDC_GAMMAGRAY                   9001
 #define IDC_STATIC_SPLIT                9002

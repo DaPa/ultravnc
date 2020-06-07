@@ -125,6 +125,9 @@ protected:
 	BOOL m_pref_SockConnect;
 	BOOL m_pref_HTTPConnect;
 	BOOL m_pref_AutoPortSelect;
+	LONG m_pref_LanOnly;
+	LONG m_pref_LanMin;
+	LONG m_pref_LanMax;
 	LONG m_pref_PortNumber;
 	LONG m_pref_HttpPortNumber;  // TightVNC 1.1.8
 	char m_pref_passwd[MAXPWLEN];

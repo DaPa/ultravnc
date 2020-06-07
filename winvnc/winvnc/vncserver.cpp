@@ -135,6 +135,9 @@ vncServer::vncServer()
 
 	m_desktop = NULL;
 	m_name = NULL;
+	m_LanOnly = TRUE;
+	m_LanMin = 2;
+	m_LanMax = 19;
 	m_port = DISPLAY_TO_PORT(0);
 	m_port_http = DISPLAY_TO_HPORT(0); // TightVNC 1.2.7
 	m_autoportselect = TRUE;
@@ -1749,6 +1752,45 @@ vncServer::SetLoopbackOnly(BOOL loopbackOnly)
 	if (loopbackOnly != m_loopbackOnly)
 	{
 		m_loopbackOnly = loopbackOnly;
+		BOOL socketConn = SockConnected();
+		SockConnect(FALSE);
+		SockConnect(socketConn);
+	}
+	return TRUE;
+}
+
+BOOL
+vncServer::SetLanOnly(BOOL lanOnly)
+{
+	if (lanOnly != m_LanOnly)
+	{
+		m_LanOnly = lanOnly;
+		BOOL socketConn = SockConnected();
+		SockConnect(FALSE);
+		SockConnect(socketConn);
+	}
+	return TRUE;
+}
+
+BOOL
+vncServer::SetLanMin(UINT lanMin)
+{
+	if (lanMin != m_LanMin)
+	{
+		m_LanMin = lanMin;
+		BOOL socketConn = SockConnected();
+		SockConnect(FALSE);
+		SockConnect(socketConn);
+	}
+	return TRUE;
+}
+
+BOOL
+vncServer::SetLanMax(UINT lanMax)
+{
+	if (lanMax != m_LanMax)
+	{
+		m_LanMax = lanMax;
 		BOOL socketConn = SockConnected();
 		SockConnect(FALSE);
 		SockConnect(socketConn);

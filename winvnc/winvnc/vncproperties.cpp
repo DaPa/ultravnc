@@ -508,6 +508,9 @@ vncProperties::DialogProc(HWND hwnd,
 		   HWND hLoopbackonly = GetDlgItem(hwnd, IDC_LOOPBACKONLY);
 		   BOOL fLoopbackonly = _this->m_server->LoopbackOnly();
 		   SendMessage(hLoopbackonly, BM_SETCHECK, fLoopbackonly, 0);
+		   HWND hLanOnly = GetDlgItem(hwnd, IDC_LANONLY);
+		   BOOL fLanOnly = _this->m_server->LanOnly();
+		   SendMessage(hLanOnly, BM_SETCHECK, fLanOnly, 0);
 
 		   HWND hTrayicon = GetDlgItem(hwnd, IDC_DISABLETRAY);
 		   BOOL fTrayicon = _this->m_server->GetDisableTrayIcon();
@@ -937,6 +940,19 @@ vncProperties::DialogProc(HWND hwnd,
 				_this->m_server->SetIPV6(IsDlgButtonChecked(hwnd, IDC_IPV6));
 #endif
 				_this->m_server->SetLoopbackOnly(IsDlgButtonChecked(hwnd, IDC_LOOPBACKONLY));
+				BOOL b = IsDlgButtonChecked(hwnd, IDC_LANONLY);
+				_this->m_server->SetLanOnly(b);
+				//if(b)
+				{
+					BOOL ok1, ok2;
+					UINT lanMin = GetDlgItemInt(hwnd, IDC_LANMIN, &ok1, TRUE);
+					UINT lanMax = GetDlgItemInt(hwnd, IDC_LANMAX, &ok2, TRUE);
+					if (ok1 && ok2)
+					{
+						_this->m_server->SetLanMin(lanMin);
+						_this->m_server->SetLanMax(lanMax);
+					}
+				}
 
 				_this->m_server->SetDisableTrayIcon(IsDlgButtonChecked(hwnd, IDC_DISABLETRAY));
 				_this->m_server->SetRdpmode(IsDlgButtonChecked(hwnd, IDC_RDPMODE));
@@ -1383,6 +1399,8 @@ vncProperties::InitPortSettings(HWND hwnd)
 	} else {
 		SetDlgItemText(hwnd, IDC_DISPLAYNO, "");
 	}
+	SetDlgItemInt(hwnd, IDC_LANMIN, m_server->LanMin(), FALSE);
+	SetDlgItemInt(hwnd, IDC_LANMAX, m_server->LanMax(), FALSE);
 	SetDlgItemInt(hwnd, IDC_PORTRFB, port_rfb, FALSE);
 	SetDlgItemInt(hwnd, IDC_PORTHTTP, port_http, FALSE);
 
@@ -1868,6 +1886,9 @@ vncProperties::LoadUserPrefs(HKEY appkey)
 	m_pref_SockConnect=LoadInt(appkey, "SocketConnect", m_pref_SockConnect);
 	m_pref_HTTPConnect=LoadInt(appkey, "HTTPConnect", m_pref_HTTPConnect);
 	m_pref_AutoPortSelect=LoadInt(appkey, "AutoPortSelect", m_pref_AutoPortSelect);
+	m_pref_LanOnly=LoadInt(appkey, "LanOnly", m_pref_LanOnly);
+	m_pref_LanMin=LoadInt(appkey, "LanMin", m_pref_LanMin);
+	m_pref_LanMax=LoadInt(appkey, "LanMax", m_pref_LanMax);
 	m_pref_PortNumber=LoadInt(appkey, "PortNumber", m_pref_PortNumber);
 	m_pref_HttpPortNumber=LoadInt(appkey, "HTTPPortNumber",
 									DISPLAY_TO_HPORT(PORT_TO_DISPLAY(m_pref_PortNumber)));
@@ -1965,6 +1986,9 @@ vncProperties::ApplyUserPrefs()
 		m_server->SetPorts(m_pref_PortNumber, m_pref_HttpPortNumber); // Tight 1.2.7
 
 	m_server->SockConnect(m_pref_SockConnect);
+	m_server->SetLanOnly(m_pref_LanOnly);
+	m_server->SetLanMin(m_pref_LanMin);
+	m_server->SetLanMax(m_pref_LanMax);
 
 
 	// Remote access prefs
@@ -2178,6 +2202,9 @@ vncProperties::SaveUserPrefs(HKEY appkey)
 	SaveInt(appkey, "SocketConnect", m_server->SockConnected());
 	SaveInt(appkey, "HTTPConnect", m_server->HTTPConnectEnabled());
 	SaveInt(appkey, "AutoPortSelect", m_server->AutoPortSelect());
+	SaveInt(appkey, "LanOnly", m_server->LanOnly());
+	SaveInt(appkey, "LanMin", m_server->LanMin());
+	SaveInt(appkey, "LanMax", m_server->LanMax());
 	if (!m_server->AutoPortSelect()) {
 		SaveInt(appkey, "PortNumber", m_server->GetPort());
 		SaveInt(appkey, "HTTPPortNumber", m_server->GetHttpPort());
@@ -2401,6 +2428,9 @@ void vncProperties::LoadUserPrefsFromIniFile()
 	m_pref_SockConnect=myIniFile.ReadInt("admin", "SocketConnect", m_pref_SockConnect);
 	m_pref_HTTPConnect=myIniFile.ReadInt("admin", "HTTPConnect", m_pref_HTTPConnect);
 	m_pref_AutoPortSelect=myIniFile.ReadInt("admin", "AutoPortSelect", m_pref_AutoPortSelect);
+	m_pref_LanOnly=myIniFile.ReadInt("admin", "LanOnly", m_pref_LanOnly);
+	m_pref_LanMin=myIniFile.ReadInt("admin", "LanMin", m_pref_LanMin);
+	m_pref_LanMax=myIniFile.ReadInt("admin", "LanMax", m_pref_LanMax);
 	m_pref_PortNumber=myIniFile.ReadInt("admin", "PortNumber", m_pref_PortNumber);
 	m_pref_HttpPortNumber=myIniFile.ReadInt("admin", "HTTPPortNumber",
 									DISPLAY_TO_HPORT(PORT_TO_DISPLAY(m_pref_PortNumber)));
@@ -2550,6 +2580,9 @@ void vncProperties::SaveUserPrefsToIniFile()
 	myIniFile.WriteInt("admin", "SocketConnect", m_server->SockConnected());
 	myIniFile.WriteInt("admin", "HTTPConnect", m_server->HTTPConnectEnabled());
 	myIniFile.WriteInt("admin", "AutoPortSelect", m_server->AutoPortSelect());
+	myIniFile.WriteInt("admin", "LanOnly", m_server->LanOnly());
+	myIniFile.WriteInt("admin", "LanMin", m_server->LanMin());
+	myIniFile.WriteInt("admin", "LanMax", m_server->LanMax());
 	if (!m_server->AutoPortSelect()) {
 		myIniFile.WriteInt("admin", "PortNumber", m_server->GetPort());
 		myIniFile.WriteInt("admin", "HTTPPortNumber", m_server->GetHttpPort());

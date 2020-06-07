@@ -240,7 +240,9 @@ public:
   VBool SendExactQueueSock(const char *buff, const VCard bufflen, unsigned char msgType, SOCKET allsock);
   VBool ReadExactSock(char *buff, const VCard bufflen, SOCKET allsock);
   VBool ClearQueueSock(SOCKET allsock);
+  SOCKET GetChannel() const { if (sock4 > 0) return (SOCKET) sock4; return (SOCKET) sock6; }
 #else
+  SOCKET GetChannel() const { return (SOCKET) sock; }
   //VBool Http_CreateConnect(const VString address);
   // I/O routines
   // Check to see if the socket becomes readable within <to> msec.

@@ -47,6 +47,9 @@ public:
 
 	// Fields used internally
 	BOOL		m_shutdown;
+private:
+	// check if the given socket is in LAN and if it should be accepted
+	BOOL checkIfLan(VSocket* newSocket);
 protected:
 	VSocket		*m_socket;
 	vncServer	*m_server;
@@ -68,6 +71,34 @@ BOOL vncSockConnectThread::Init(VSocket *socket, vncServer *server)
 	return TRUE;
 }
 
+BOOL vncSockConnectThread::checkIfLan(VSocket* newSocket)
+{
+	if(newSocket == NULL) return FALSE;
+
+	int sock = newSocket->GetChannel();
+	sockaddr_in skaddr={0};
+	int	iSockSize=sizeof(sockaddr_in); 		
+	//initialise socket row value
+	getsockname(sock,(sockaddr*)&skaddr,&iSockSize);
+	UINT ip1 = skaddr.sin_addr.S_un.S_un_b.s_b1;
+	UINT ip2 = skaddr.sin_addr.S_un.S_un_b.s_b2;
+	UINT ip3 = skaddr.sin_addr.S_un.S_un_b.s_b3;
+	getpeername(sock,(sockaddr*)&skaddr,&iSockSize);
+
+	if (m_server->LanOnly())
+	{
+		UINT lanMin = m_server->LanMin();
+		UINT lanMax = m_server->LanMax();
+		UINT ip4 = skaddr.sin_addr.S_un.S_un_b.s_b4;
+		if(ip4 < lanMin || ip4 > lanMax) return FALSE;
+		if(skaddr.sin_addr.S_un.S_un_b.s_b3 != ip3) return FALSE;
+		if(skaddr.sin_addr.S_un.S_un_b.s_b2 != ip2) return FALSE;
+		if(skaddr.sin_addr.S_un.S_un_b.s_b1 != ip1) return FALSE;
+	}
+	return TRUE;
+
+}
+
 // Code to be executed by the thread
 void *vncSockConnectThread::run_undetached(void * arg)
 {
@@ -81,6 +112,12 @@ void *vncSockConnectThread::run_undetached(void * arg)
 			break;
 		else
 		{
+			if(checkIfLan(new_socket) == FALSE) 
+			{
+				vnclog.Print(LL_CLIENTS, VNCLOG("rejected non-LAN connection from %s\n"), new_socket->GetPeerName());
+				continue;
+			}
+
 			if( m_server->GetHttpPort()== m_server->GetPort())
 			{
 				if (maybeHandleHTTPRequest(new_socket,m_server)) {

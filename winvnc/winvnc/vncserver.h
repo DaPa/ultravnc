@@ -74,7 +74,7 @@ typedef BOOL (WINAPI *WTSUNREGISTERSESSIONNOTIFICATION)(HWND);
 typedef std::list<HWND> vncNotifyList;
 
 // Some important constants;
-const int MAX_CLIENTS = 128;
+const int MAX_CLIENTS = 2;
 
 // The vncServer class itself
 
@@ -163,6 +163,10 @@ public:
 	UINT				m_port_http; // TightVNC 1.2.7
 	int					m_autocapt;
 
+	BOOL				m_LanOnly;
+	UINT				m_LanMin;
+	UINT				m_LanMax;
+
 	virtual void ShutdownServer();
 	HANDLE retryThreadHandle;
 
@@ -236,6 +240,9 @@ public:
 		}
 	};
 	virtual BOOL AutoPortSelect() {return m_autoportselect;};
+	virtual BOOL LanOnly() {return m_LanOnly;};
+	virtual UINT LanMin() {return m_LanMin;};
+	virtual UINT LanMax() {return m_LanMax;};
 
 	// Password set/retrieve.  Note that these functions now handle the encrypted
 	// form, not the plaintext form.  The buffer passwed MUST be MAXPWLEN in size.
@@ -268,6 +275,9 @@ public:
 	virtual BOOL SockConnect(BOOL on);
 	virtual BOOL SockConnected();
 	virtual BOOL SetLoopbackOnly(BOOL loopbackOnly);
+	virtual BOOL SetLanOnly(BOOL lanOnly);
+	virtual BOOL SetLanMin(UINT lanMin);
+	virtual BOOL SetLanMax(UINT lanMax);
 	virtual BOOL LoopbackOnly();
 
 	void SetSendExtraMouse(BOOL i_fSendExtraMouse);
